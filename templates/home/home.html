@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}
+Home | Mahato Chinese Center
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hero">
+
+    <div class="container hero-content">
+
+        <div class="hero-text">
+
+            <p class="hero-label">
+                🥢 Authentic Chinese Flavors
+            </p>
+
+            <h1>
+                Delicious Chinese Food,
+                Made With Passion.
+            </h1>
+
+            <p>
+                Welcome to Mahato Chinese Center.
+                Enjoy delicious noodles, rice, dumplings
+                and more.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="{% url 'menu_home' %}" class="btn btn-primary">
+                    Explore Menu
+                </a>
+
+                <a href="{% url 'about' %}" class="btn btn-secondary">
+                    Learn More
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="features">
+
+    <div class="container">
+
+        <h2>Why Choose Us?</h2>
+
+        <div class="feature-grid">
+
+            <div class="feature-card">
+                <div class="feature-icon">🍜</div>
+                <h3>Fresh Food</h3>
+                <p>
+                    Freshly prepared Chinese dishes
+                    made with quality ingredients.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div class="feature-icon">🥢</div>
+                <h3>Authentic Taste</h3>
+                <p>
+                    Enjoy delicious Chinese-inspired
+                    flavors in every dish.
+                </p>
+            </div>
+
+
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Fast Service</h3>
+                <p>
+                    Quick ordering and convenient
+                    service for our customers.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
