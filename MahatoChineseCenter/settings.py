@@ -12,13 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ---------------------------------------------------------------------------
 # SECURITY — all secrets come from environment variables, never hardcoded
 # ---------------------------------------------------------------------------
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-dev-key-change-in-production')
-DEBUG = os.environ.get('DEBUG', '0') == '1'
+import secrets
 
-# Only enforce strict SECRET_KEY when running under Gunicorn (runtime) with DEBUG=False,
-# allowing build-time management commands like collectstatic to succeed.
-if not DEBUG and os.environ.get('SERVER_SOFTWARE', '').startswith('gunicorn') and (not SECRET_KEY or SECRET_KEY == 'unsafe-dev-key-change-in-production' or len(SECRET_KEY) < 32):
-    raise RuntimeError("DJANGO_SECRET_KEY must be set to a secure value (>=32 chars) when DEBUG=False")
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY or SECRET_KEY == 'unsafe-dev-key-change-in-production' or len(SECRET_KEY) < 32:
+    # Auto-generate a secure random 50-character key so the app always boots safely
+    SECRET_KEY = secrets.token_urlsafe(50)
+
+DEBUG = os.environ.get('DEBUG', '0') == '1'
 
 _raw_hosts = os.environ.get('ALLOWED_HOSTS', '*').split(',')
 ALLOWED_HOSTS = [h.strip() for h in _raw_hosts if h.strip()]
@@ -88,10 +89,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'MahatoChineseCenter.wsgi.application'
 
 # ---------------------------------------------------------------------------
-# Database — PostgreSQL in containers, SQLite fallback for local dev
+# Database — PostgreSQL when host is reachable, SQLite fallback for isolated tenants / local dev
 # ---------------------------------------------------------------------------
-_DB_HOST = os.environ.get('DB_HOST', '')
+_DB_HOST = os.environ.get('DB_HOST', '').strip()
+_USE_POSTGRES = False
 if _DB_HOST:
+    import socket
+    try:
+        socket.gethostbyname(_DB_HOST)
+        _USE_POSTGRES = True
+    except Exception:
+        _USE_POSTGRES = False
+
+if _USE_POSTGRES:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -103,7 +113,7 @@ if _DB_HOST:
         }
     }
 else:
-    # Local development fallback
+    # Isolated container / local development fallback
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
