@@ -1,0 +1,229 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$qzsoEslwBGejeMgTuvupny$C8o+225vfdOmHzb6U+5hERxD8PkEFdtd3KT9yWMnmJ0=",
+    "last_login": "2026-08-12T12:03:00.249Z",
+    "is_superuser": true,
+    "username": "rohit",
+    "first_name": "",
+    "last_name": "",
+    "email": "master.rohit@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-12T11:36:48.958Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$virEplfcSOeePPwgYGJy4Z$DbMaUYqO38+G0hTBwUuC7NCWU1MWnvsbumll2nIKbVA=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "test1",
+    "first_name": "",
+    "last_name": "",
+    "email": "",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-13T05:45:16.266Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "menu.category",
+  "pk": 1,
+  "fields": {
+    "name": "Noodles",
+    "slug": "noodles",
+    "description": "",
+    "image": "",
+    "is_active": true,
+    "created_at": "2026-08-13T05:49:16.515Z",
+    "updated_at": "2026-08-13T05:49:16.515Z"
+  }
+},
+{
+  "model": "menu.category",
+  "pk": 2,
+  "fields": {
+    "name": "Momos",
+    "slug": "momos",
+    "description": "Delicious Chinese-style Momos dishes.",
+    "image": "categories/Momos.jpg",
+    "is_active": true,
+    "created_at": "2026-08-13T05:55:08.351Z",
+    "updated_at": "2026-08-13T05:55:08.351Z"
+  }
+},
+{
+  "model": "menu.category",
+  "pk": 3,
+  "fields": {
+    "name": "Rise",
+    "slug": "Rise",
+    "description": "Delicious Chinese-style Rise dishes.",
+    "image": "categories/Rise.webp",
+    "is_active": true,
+    "created_at": "2026-08-13T06:13:55.566Z",
+    "updated_at": "2026-08-13T06:13:55.566Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 1,
+  "fields": {
+    "category": 1,
+    "name": "Chicken Chow Mein",
+    "slug": "chicken-chow-mein",
+    "description": "Stir-fried noodles with chicken,\r\nvegetables and Chinese sauces.",
+    "price": "150.00",
+    "discount_percentage": "10.00",
+    "calories": 350,
+    "spice_level": "MEDIUM",
+    "food_type": "NON_VEG",
+    "preparation_time": 10,
+    "image": "foods/Noodles.webp",
+    "is_available": true,
+    "is_special": true,
+    "is_featured": true,
+    "created_at": "2026-08-13T05:58:53.078Z",
+    "updated_at": "2026-08-13T05:58:53.078Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 2,
+  "fields": {
+    "category": 1,
+    "name": "Veg Hakka Noodles",
+    "slug": "veg-hakka-noodles",
+    "description": "Stir-fried noodles with vegies,\r\nvegetables and Chinese sauces.",
+    "price": "120.00",
+    "discount_percentage": "10.00",
+    "calories": 100,
+    "spice_level": "MEDIUM",
+    "food_type": "VEG",
+    "preparation_time": 5,
+    "image": "foods/veg-Noodles.webp",
+    "is_available": true,
+    "is_special": false,
+    "is_featured": true,
+    "created_at": "2026-08-13T06:10:21.430Z",
+    "updated_at": "2026-08-13T06:10:21.430Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 3,
+  "fields": {
+    "category": 1,
+    "name": "Schezwan Noodles",
+    "slug": "schezwan-noodles",
+    "description": "Stir-fried noodles with Schezwan,\r\nvegetables and Schezwan sauces.",
+    "price": "150.00",
+    "discount_percentage": "0.00",
+    "calories": 450,
+    "spice_level": "EXTRA_HOT",
+    "food_type": "NON_VEG",
+    "preparation_time": 10,
+    "image": "foods/Schezwan_Noodles.webp",
+    "is_available": true,
+    "is_special": true,
+    "is_featured": true,
+    "created_at": "2026-08-13T06:12:30.997Z",
+    "updated_at": "2026-08-13T06:12:30.997Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 4,
+  "fields": {
+    "category": 3,
+    "name": "Chicken Fried Rice",
+    "slug": "chicken-fried-rice",
+    "description": "Stir-fried rice with chicken,\r\nvegetables and Chinese sauces.",
+    "price": "150.00",
+    "discount_percentage": "10.00",
+    "calories": 450,
+    "spice_level": "HOT",
+    "food_type": "NON_VEG",
+    "preparation_time": 10,
+    "image": "foods/Chicken_Fried_Rice.webp",
+    "is_available": true,
+    "is_special": true,
+    "is_featured": true,
+    "created_at": "2026-08-13T06:15:52.847Z",
+    "updated_at": "2026-08-13T06:15:52.847Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 5,
+  "fields": {
+    "category": 3,
+    "name": "Veg Fried Rice",
+    "slug": "veg-fried-rice",
+    "description": "Stir-fried Rice with vegies,\r\nvegetables and Chinese sauces.",
+    "price": "130.00",
+    "discount_percentage": "10.00",
+    "calories": 300,
+    "spice_level": "MEDIUM",
+    "food_type": "VEG",
+    "preparation_time": 10,
+    "image": "foods/Veg_Rice.webp",
+    "is_available": true,
+    "is_special": true,
+    "is_featured": true,
+    "created_at": "2026-08-13T06:18:03.991Z",
+    "updated_at": "2026-08-13T06:18:03.991Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 6,
+  "fields": {
+    "category": 2,
+    "name": "Chicken Momos",
+    "slug": "chicken-momos",
+    "description": "Boiled momos with chicken,\r\nvegies and Chinese sauces.",
+    "price": "140.00",
+    "discount_percentage": "15.00",
+    "calories": 350,
+    "spice_level": "HOT",
+    "food_type": "NON_VEG",
+    "preparation_time": 15,
+    "image": "foods/Chicken_momo.webp",
+    "is_available": true,
+    "is_special": true,
+    "is_featured": true,
+    "created_at": "2026-08-13T06:21:38.354Z",
+    "updated_at": "2026-08-13T06:21:38.354Z"
+  }
+},
+{
+  "model": "menu.food",
+  "pk": 7,
+  "fields": {
+    "category": 2,
+    "name": "Veg Momos",
+    "slug": "veg-momos",
+    "description": "Boiled momos with vegies,\r\nSchezwan and Chinese sauces.",
+    "price": "120.00",
+    "discount_percentage": "10.00",
+    "calories": 200,
+    "spice_level": "MEDIUM",
+    "food_type": "VEG",
+    "preparation_time": 15,
+    "image": "foods/Veg_momo.webp",
+    "is_available": true,
+    "is_special": false,
+    "is_featured": false,
+    "created_at": "2026-08-13T06:23:12.709Z",
+    "updated_at": "2026-08-13T06:23:12.709Z"
+  }
+}
+]

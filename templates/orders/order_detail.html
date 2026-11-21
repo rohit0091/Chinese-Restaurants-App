@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+
+{% block title %}Track Order #{{ order.order_number }} - Mahato Chinese Center{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Custom vertical or horizontal progress tracking timeline stepper */
+    .stepper {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin: 40px 0;
+    }
+    
+    .stepper::before {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background-color: #e9ecef;
+        z-index: 1;
+    }
+    
+    .step {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        flex: 1;
+    }
+    
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #ffffff;
+        border: 4px solid #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px auto;
+        color: #adb5bd;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .step.active .step-icon {
+        border-color: #28a745;
+        background-color: #28a745;
+        color: white;
+        box-shadow: 0 0 12px rgba(40, 167, 69, 0.4);
+    }
+    
+    .step.completed .step-icon {
+        border-color: #28a745;
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .step-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6c757d;
+        text-transform: uppercase;
+    }
+    
+    .step.active .step-text {
+        color: #28a745;
+        font-weight: 700;
+    }
+    
+    /* Stepper line active state modifier */
+    .stepper-progress {
+        position: absolute;
+        top: 24px;
+        left: 0;
+        height: 4px;
+        background-color: #28a745;
+        z-index: 1;
+        transition: width 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+        .stepper {
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 20px;
+            margin-left: 10px;
+        }
+        .stepper::before {
+            top: 0;
+            bottom: 0;
+            left: 24px;
+            width: 4px;
+            height: 100%;
+        }
+        .stepper-progress {
+            top: 0;
+            left: 24px;
+            width: 4px !important;
+            height: 0; /* Dynamic height calculated in js if needed, fallback to default bootstrap lists for mobile */
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .step-icon {
+            margin: 0;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-dark mb-0"><i class="fa-solid fa-route text-danger me-2"></i>Track Order #{{ order.order_number }}</h1>
+        <a href="{% url 'order_history' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-4"><i class="fa-solid fa-arrow-left me-1"></i>Back to Orders</a>
+    </div>
+
+    <!-- Stepper Tracker -->
+    <div class="card border-0 shadow-sm p-4 bg-white mb-5">
+        {% if current_idx == -2 %}
+            <div class="alert alert-danger border-0 rounded-3 mb-0 text-center py-4">
+                <i class="fa-solid fa-circle-xmark fa-2x mb-2 d-block"></i>
+                <h4 class="fw-bold">This Order has been Cancelled</h4>
+                <p class="mb-0 small text-danger-emphasis">Please reach out to store support if you have any questions or require a payment refund.</p>
+            </div>
+        {% else %}
+            <!-- Stepper Progress line (horizontal desktop helper) -->
+            <div class="position-relative d-none d-md-block">
+                <div class="stepper-progress" style="width: {% if current_idx == 0 %}0%{% elif current_idx == 1 %}20%{% elif current_idx == 2 %}40%{% elif current_idx == 3 %}60%{% elif current_idx == 4 %}80%{% else %}100%{% endif %};"></div>
+            </div>
+            
+            <div class="stepper">
+                <div class="step {% if current_idx >= 0 %}completed{% endif %} {% if current_idx == 0 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="step-text">Placed</div>
+                </div>
+                <div class="step {% if current_idx >= 1 %}completed{% endif %} {% if current_idx == 1 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-thumbs-up"></i></div>
+                    <div class="step-text">Confirmed</div>
+                </div>
+                <div class="step {% if current_idx >= 2 %}completed{% endif %} {% if current_idx == 2 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-fire-burner"></i></div>
+                    <div class="step-text">Preparing</div>
+                </div>
+                <div class="step {% if current_idx >= 3 %}completed{% endif %} {% if current_idx == 3 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-bowl-food"></i></div>
+                    <div class="step-text">Ready</div>
+                </div>
+                <div class="step {% if current_idx >= 4 %}completed{% endif %} {% if current_idx == 4 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-motorcycle"></i></div>
+                    <div class="step-text">Out for Delivery</div>
+                </div>
+                <div class="step {% if current_idx >= 5 %}completed{% endif %} {% if current_idx == 5 %}active{% endif %}">
+                    <div class="step-icon"><i class="fa-solid fa-house-chimney-check"></i></div>
+                    <div class="step-text">Delivered</div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row g-4">
+        <!-- Left panel: item lists & status history logs -->
+        <div class="col-lg-8">
+            <!-- Items Card -->
+            <div class="card border-0 shadow-sm p-4 bg-white mb-4">
+                <h4 class="mb-4 text-dark"><i class="fa-solid fa-utensils text-danger me-2"></i>Ordered Items</h4>
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr class="text-muted small text-uppercase">
+                                <th>Food</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th class="text-end">Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in items %}
+                                <tr>
+                                    <td class="fw-bold text-dark">{{ item.food_name }}</td>
+                                    <td>Rs. {{ item.unit_price }}</td>
+                                    <td class="fw-semibold">x {{ item.quantity }}</td>
+                                    <td class="fw-bold text-danger text-end">Rs. {{ item.subtotal }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Audit logs -->
+            <div class="card border-0 shadow-sm p-4 bg-white">
+                <h4 class="mb-4 text-dark"><i class="fa-solid fa-clipboard-list text-danger me-2"></i>Status History</h4>
+                <div class="d-flex flex-column gap-3">
+                    {% for log in history %}
+                        <div class="p-3 bg-light border rounded">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="badge bg-dark">{{ log.get_status_display }}</span>
+                                <span class="small text-muted font-monospace">{{ log.created_at|date:"d M Y, h:i A" }}</span>
+                            </div>
+                            {% if log.note %}
+                                <p class="small text-secondary mb-0 mt-2">{{ log.note }}</p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right panel: Address info and Payment receipts -->
+        <div class="col-lg-4">
+            <!-- Delivery Address Snapshot -->
+            <div class="card border-0 shadow-sm p-4 bg-white mb-4">
+                <h5 class="text-dark mb-3"><i class="fa-solid fa-location-dot text-danger me-2"></i>Delivery Address</h5>
+                <h6 class="fw-bold text-dark mb-1">{{ order.delivery_address.full_name }}</h6>
+                <p class="small text-muted mb-2"><i class="fa-solid fa-phone me-1"></i>{{ order.delivery_address.phone }}</p>
+                <p class="small text-secondary mb-0">
+                    {{ order.delivery_address.address_line_1 }}{% if order.delivery_address.address_line_2 %}, {{ order.delivery_address.address_line_2 }}{% endif %}<br>
+                    {% if order.delivery_address.landmark %}Landmark: {{ order.delivery_address.landmark }}<br>{% endif %}
+                    {{ order.delivery_address.city }}, {{ order.delivery_address.state }} - <strong>{{ order.delivery_address.pincode }}</strong>
+                </p>
+            </div>
+
+            <!-- Billing Breakdown -->
+            <div class="card border-0 shadow-sm p-4 bg-white">
+                <h5 class="text-dark mb-4 border-bottom pb-2">Billing Details</h5>
+                
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Subtotal</span>
+                    <span>Rs. {{ order.subtotal }}</span>
+                </div>
+                
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>GST Tax (5%)</span>
+                    <span>Rs. {{ order.tax }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2 small text-muted">
+                    <span>Delivery Fee</span>
+                    <span>Rs. {{ order.delivery_fee }}</span>
+                </div>
+
+                <hr class="border-secondary-subtle my-3">
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fw-bold text-dark">Paid Amount</span>
+                    <span class="fw-bold text-danger">Rs. {{ order.total_amount }}</span>
+                </div>
+                
+                <div class="p-2 border rounded bg-light text-center small text-muted font-monospace">
+                    {{ order.payment.get_payment_method_display }} - {{ order.payment.get_payment_status_display }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

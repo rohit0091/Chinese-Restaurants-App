@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4 text-dark"><i class="fa-solid fa-cash-register text-danger me-2"></i>Checkout</h1>
+    
+    <form action="{% url 'checkout' %}" method="POST">
+        {% csrf_token %}
+        <div class="row g-4">
+            <!-- Left Panel: Delivery Details & Payments -->
+            <div class="col-lg-8">
+                <!-- Address Book Selection -->
+                <div class="card border-0 shadow-sm p-4 bg-white mb-4">
+                    <h4 class="mb-3 text-dark"><i class="fa-solid fa-location-dot text-danger me-2"></i>Select Delivery Address</h4>
+                    
+                    {% if addresses %}
+                        <div class="d-flex flex-column gap-3 mb-4">
+                            {% for addr in addresses %}
+                                <label class="border rounded p-3 d-flex align-items-start gap-3 cursor-pointer">
+                                    <input type="radio" name="address_id" value="{{ addr.id }}" class="mt-1" {% if addr.is_default %}checked{% endif %} required>
+                                    <div>
+                                        <div class="d-flex gap-2 align-items-center mb-1">
+                                            <h6 class="fw-bold text-dark mb-0">{{ addr.full_name }}</h6>
+                                            <span class="badge bg-dark" style="font-size:0.65rem;">{{ addr.get_address_type_display }}</span>
+                                            {% if addr.is_default %}<span class="badge bg-danger" style="font-size:0.65rem;">Default</span>{% endif %}
+                                        </div>
+                                        <p class="small text-muted mb-1"><i class="fa-solid fa-phone me-1"></i>{{ addr.phone }}</p>
+                                        <p class="small text-secondary mb-0">
+                                            {{ addr.address_line_1 }}{% if addr.address_line_2 %}, {{ addr.address_line_2 }}{% endif %}, {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                                        </p>
+                                    </div>
+                                </label>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning py-3 border-0 rounded-3 mb-4">
+                            <i class="fa-solid fa-exclamation-triangle me-2"></i> You don't have any saved addresses. Please fill in the shipping form below to place your order.
+                        </div>
+                    {% endif %}
+                    
+                    <!-- New Address Form (collapsible or backup) -->
+                    {% if not addresses %}
+                        <h5 class="text-dark border-top pt-3 mb-3">Add New Shipping Address</h5>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Full Name *</label>
+                                <input type="text" name="full_name" class="form-control border-secondary-subtle" placeholder="e.g. Rohit Mahato">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Phone Number *</label>
+                                <input type="tel" name="phone" class="form-control border-secondary-subtle" placeholder="Contact number for delivery">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Address Line 1 *</label>
+                                <input type="text" name="address_line_1" class="form-control border-secondary-subtle" placeholder="Flat, House no., Apartment">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-semibold text-muted">Address Line 2</label>
+                                <input type="text" name="address_line_2" class="form-control border-secondary-subtle" placeholder="Area, Sector, Village">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">City *</label>
+                                <input type="text" name="city" class="form-control border-secondary-subtle" placeholder="City">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold text-muted">State *</label>
+                                <input type="text" name="state" class="form-control border-secondary-subtle" placeholder="State">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label small fw-semibold text-muted">Pincode *</label>
+                                <input type="text" name="pincode" class="form-control border-secondary-subtle" placeholder="6-digit">
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Payment Selection -->
+                <div class="card border-0 shadow-sm p-4 bg-white mb-4">
+                    <h4 class="mb-3 text-dark"><i class="fa-solid fa-credit-card text-danger me-2"></i>Select Payment Method</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer h-100">
+                                <input type="radio" name="payment_method" value="COD" checked required>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1"><i class="fa-solid fa-hand-holding-dollar text-success me-2"></i>Cash on Delivery</h6>
+                                    <p class="small text-muted mb-0">Pay cash/UPI at your doorstep upon delivery.</p>
+                                </div>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="border rounded p-3 d-flex align-items-center gap-3 cursor-pointer h-100">
+                                <input type="radio" name="payment_method" value="MOCK_ONLINE" required>
+                                <div>
+                                    <h6 class="fw-bold text-dark mb-1"><i class="fa-solid fa-globe text-primary me-2"></i>Mock Online Payment</h6>
+                                    <p class="small text-muted mb-0">Simulate successful card/UPI validation immediately.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Special instructions -->
+                <div class="card border-0 shadow-sm p-4 bg-white">
+                    <h4 class="mb-3 text-dark"><i class="fa-solid fa-message text-danger me-2"></i>Special Instructions</h4>
+                    <textarea name="special_instructions" rows="3" class="form-control border-secondary-subtle" placeholder="Add cooking preferences, spice overrides, or building entry details..."></textarea>
+                </div>
+            </div>
+
+            <!-- Right Panel: Items bought summaries & checkout button -->
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm p-4 bg-white sticky-lg-top" style="top: 100px; z-index: 10;">
+                    <h4 class="mb-4 text-dark border-bottom pb-2">Checkout Details</h4>
+                    
+                    <!-- Items summaries -->
+                    <div class="d-flex flex-column gap-2 mb-4">
+                        {% for item in items %}
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>{{ item.food.name }} (x{{ item.quantity }})</span>
+                                <span>Rs. {% widthratio item.food.final_price 1 item.quantity %}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <hr class="border-secondary-subtle my-3">
+
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span>Subtotal</span>
+                        <span>Rs. {{ subtotal|floatformat:2 }}</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span>GST Tax (5%)</span>
+                        <span>Rs. {{ tax|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 small text-muted">
+                        <span>Delivery Fee</span>
+                        {% if delivery_fee > 0 %}
+                            <span>Rs. {{ delivery_fee|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="fw-bold text-success">FREE</span>
+                        {% endif %}
+                    </div>
+
+                    <hr class="border-secondary-subtle my-3">
+
+                    <div class="d-flex justify-content-between mb-4">
+                        <span class="fs-5 fw-bold text-dark">Total Amount</span>
+                        <span class="fs-4 fw-bold text-danger">Rs. {{ total|floatformat:2 }}</span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg rounded-pill shadow-sm py-2 fw-bold"><i class="fa-solid fa-circle-check me-2"></i>Place Order Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Order History - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4 text-dark"><i class="fa-solid fa-clock-rotate-left text-danger me-2"></i>My Order History</h1>
+
+    {% if orders %}
+        <div class="card border-0 shadow-sm p-4 bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr class="text-muted small text-uppercase">
+                            <th>Order No</th>
+                            <th>Date</th>
+                            <th>Items Purchased</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            <tr>
+                                <td class="fw-bold text-dark">{{ order.order_number }}</td>
+                                <td class="small">{{ order.created_at|date:"d M Y, h:i A" }}</td>
+                                <td>
+                                    <div class="d-flex flex-column gap-1">
+                                        {% for item in order.items.all %}
+                                            <span class="small text-muted">{{ item.food_name }} (x{{ item.quantity }})</span>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+                                <td class="fw-bold text-danger">Rs. {{ order.total_amount }}</td>
+                                <td>
+                                    <span class="badge 
+                                        {% if order.status == 'DELIVERED' %}bg-success
+                                        {% elif order.status == 'CANCELLED' %}bg-danger
+                                        {% else %}bg-warning text-dark
+                                        {% endif %}">
+                                        {{ order.get_status_display }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a href="{% url 'order_detail' order.order_number %}" class="btn btn-outline-danger btn-sm rounded-pill px-4">Track Order</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="card border-0 shadow-sm p-5 text-center bg-white">
+            <div class="mb-4"><i class="fa-solid fa-face-meh fa-3x text-secondary-subtle"></i></div>
+            <h3 class="text-dark mb-2">No Orders Found</h3>
+            <p class="text-muted mb-4">You haven't placed any orders with us yet. Head over to our menu and pick something tasty!</p>
+            <a href="{% url 'menu' %}" class="btn btn-danger rounded-pill px-4">Browse Menu</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

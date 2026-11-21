@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center my-4">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow p-5 bg-white rounded-3">
+                <div class="text-center mb-4">
+                    <div class="mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle" style="width: 70px; height: 70px;">
+                        <i class="fa-solid fa-lock fa-2x text-danger"></i>
+                    </div>
+                    <h2 class="text-dark fw-bold mb-1">Welcome Back</h2>
+                    <p class="text-muted">Login to order delicious fast food</p>
+                </div>
+
+                <form action="{% url 'login' %}" method="POST">
+                    {% csrf_token %}
+                    <!-- Next redirection input -->
+                    {% if request.GET.next %}
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label fw-semibold text-muted">Username or Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0 bg-transparent text-secondary border-secondary-subtle"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" name="username" id="username" class="form-control border-start-0 border-secondary-subtle ps-0" placeholder="Enter username or email" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-semibold text-muted">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text border-end-0 bg-transparent text-secondary border-secondary-subtle"><i class="fa-solid fa-key"></i></span>
+                            <input type="password" name="password" id="password" class="form-control border-start-0 border-secondary-subtle ps-0" placeholder="Enter password" required>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-danger w-100 rounded-pill py-2 fw-bold" type="submit">Sign In</button>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="text-muted mb-0">Don't have an account? <a href="{% url 'signup' %}" class="text-danger fw-semibold text-decoration-none">Sign Up Now</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

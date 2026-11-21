@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Mahato Chinese Center - Welcome to Spice Heaven{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-banner d-flex align-items-center" style="min-height: 450px;">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3 text-white">Sizzling & Spicy Chinese Cravings!</h1>
+        <p class="lead mb-4 text-white-50">Handcrafted noodles, crispy manchurian, delicious momos, and traditional fast food prepared fresh just for you.</p>
+        
+        <!-- Search bar -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <form action="{% url 'menu' %}" method="GET" class="input-group input-group-lg shadow-sm">
+                    <input type="text" name="q" class="form-control rounded-start-pill border-0 px-4" placeholder="Search for Chowmein, Fried Rice, Momos...">
+                    <button class="btn btn-warning rounded-end-pill px-4 text-dark fw-bold" type="submit">
+                        <i class="fa-solid fa-magnifying-glass me-2"></i>Search Menu
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Active Offers Banner -->
+{% if active_offers %}
+<section class="py-4 bg-warning-subtle border-bottom">
+    <div class="container">
+        <div class="row align-items-center text-center text-md-start">
+            <div class="col-md-3 mb-2 mb-md-0">
+                <span class="badge bg-danger fs-6 px-3 py-2"><i class="fa-solid fa-percentage me-1"></i> Special Offers</span>
+            </div>
+            <div class="col-md-9">
+                <div class="d-flex flex-wrap gap-4 justify-content-center justify-content-md-start align-items-center">
+                    {% for offer in active_offers %}
+                        <div>
+                            <strong>{{ offer.name }}</strong>: Get 
+                            {% if offer.discount_type == 'PERCENTAGE' %}{{ offer.discount_value|floatformat:0 }}%{% else %}Rs. {{ offer.discount_value }}{% endif %} Off! 
+                            {% if offer.coupon_code %}Use Code: <span class="badge bg-dark font-monospace">{{ offer.coupon_code }}</span>{% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Browse Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="h1 mb-2 text-dark">Explore Our Categories</h2>
+            <p class="text-muted">Choose your favorite category of Chinese delights</p>
+        </div>
+        
+        <div class="row g-4 justify-content-center">
+            {% for category in categories %}
+                <div class="col-6 col-md-4 col-lg-2">
+                    <a href="{% url 'menu' %}?category={{ category.slug }}" class="text-decoration-none">
+                        <div class="card text-center border-0 shadow-sm p-3 h-100 bg-white" style="transition: transform 0.2s ease;">
+                            <div class="mb-3 mx-auto rounded-circle d-flex align-items-center justify-content-center bg-danger-subtle" style="width: 80px; height: 80px;">
+                                {% if category.image %}
+                                    <img src="{{ category.image.url }}" alt="{{ category.name }}" class="rounded-circle w-100 h-100" style="object-fit: cover;">
+                                {% else %}
+                                    <i class="fa-solid fa-bowl-food fa-2x text-danger"></i>
+                                {% endif %}
+                            </div>
+                            <h5 class="card-title text-dark fs-6 mb-0">{{ category.name }}</h5>
+                        </div>
+                    </a>
+                </div>
+            {% empty %}
+                <p class="text-center text-muted">No categories available at the moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Food Items -->
+<section class="py-5 bg-light border-top">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5">
+            <div>
+                <h2 class="h1 mb-2 text-dark">Featured Specialties</h2>
+                <p class="text-muted">Must-try customer favorites picked by our chef</p>
+            </div>
+            <a href="{% url 'menu' %}" class="btn btn-outline-danger rounded-pill px-4">View All Menu <i class="fa-solid fa-arrow-right ms-1"></i></a>
+        </div>
+        
+        <div class="row g-4">
+            {% for food in featured_foods %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card food-card position-relative">
+                        <!-- Veg/Non-Veg Badge -->
+                        <span class="food-badge {% if food.food_type == 'VEG' %}badge-veg{% else %}badge-nonveg{% endif %}">
+                            <i class="fa-solid {% if food.food_type == 'VEG' %}fa-leaf{% else %}fa-circle{% endif %} me-1"></i>{{ food.get_food_type_display }}
+                        </span>
+                        
+                        <!-- Food image -->
+                        {% if food.image %}
+                            <img src="{{ food.image.url }}" class="card-img-top" alt="{{ food.name }}">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 180px;">
+                                <i class="fa-solid fa-utensils fa-3x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0"><a href="{% url 'food_detail' food.slug %}" class="text-decoration-none text-dark">{{ food.name }}</a></h5>
+                                <div class="text-danger fw-bold fs-5">
+                                    {% if food.discount_percentage > 0 %}
+                                        <span class="text-muted text-decoration-line-through fs-6 me-2">Rs. {{ food.price }}</span>Rs. {{ food.final_price|floatformat:2 }}
+                                    {% else %}
+                                        Rs. {{ food.price }}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <p class="card-text text-muted small flex-grow-1">{{ food.description|truncatewords:15 }}</p>
+                            
+                            <!-- Spice level indicator -->
+                            <div class="mb-3">
+                                <span class="small text-muted me-2">Spice Level:</span>
+                                <span class="small fw-semibold text-danger">
+                                    {% if food.spice_level == 'MILD' %}
+                                        <i class="fa-solid fa-pepper-hot spice-chili active"></i><i class="fa-solid fa-pepper-hot spice-chili"></i><i class="fa-solid fa-pepper-hot spice-chili"></i>
+                                        Mild
+                                    {% elif food.spice_level == 'MEDIUM' %}
+                                        <i class="fa-solid fa-pepper-hot spice-chili active"></i><i class="fa-solid fa-pepper-hot spice-chili active"></i><i class="fa-solid fa-pepper-hot spice-chili"></i>
+                                        Medium
+                                    {% elif food.spice_level == 'HOT' %}
+                                        <i class="fa-solid fa-pepper-hot spice-chili active"></i><i class="fa-solid fa-pepper-hot spice-chili active"></i><i class="fa-solid fa-pepper-hot spice-chili active"></i>
+                                        Hot
+                                    {% else %}
+                                        <i class="fa-solid fa-pepper-hot spice-chili active text-danger"></i><i class="fa-solid fa-pepper-hot spice-chili active text-danger"></i><i class="fa-solid fa-pepper-hot spice-chili active text-danger"></i><i class="fa-solid fa-pepper-hot spice-chili active text-danger"></i>
+                                        Extra Hot!
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            <div class="d-grid mt-auto">
+                                <a href="{% url 'add_to_cart' food.id %}" class="btn btn-danger rounded-pill"><i class="fa-solid fa-cart-plus me-2"></i>Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-muted">No featured specialties available.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Chef's Specials -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="h1 mb-2 text-dark">Weekly Specials</h2>
+            <p class="text-muted">Unique recipes and limited-run fast food specials</p>
+        </div>
+        
+        <div class="row g-4">
+            {% for food in special_foods %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="card food-card position-relative">
+                        <span class="food-badge badge bg-warning text-dark"><i class="fa-solid fa-star me-1"></i>Special Offer</span>
+                        {% if food.image %}
+                            <img src="{{ food.image.url }}" class="card-img-top" alt="{{ food.name }}">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 180px;">
+                                <i class="fa-solid fa-utensils fa-3x text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body p-4 d-flex flex-column">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0"><a href="{% url 'food_detail' food.slug %}" class="text-decoration-none text-dark">{{ food.name }}</a></h5>
+                                <div class="text-danger fw-bold fs-5">Rs. {{ food.final_price|floatformat:2 }}</div>
+                            </div>
+                            <p class="card-text text-muted small flex-grow-1">{{ food.description }}</p>
+                            <a href="{% url 'add_to_cart' food.id %}" class="btn btn-danger rounded-pill mt-3"><i class="fa-solid fa-cart-plus me-2"></i>Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-center text-muted col-12">Check back later for new specials!</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

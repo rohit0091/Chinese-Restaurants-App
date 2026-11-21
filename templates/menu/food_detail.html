@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ food.name }} - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'menu' %}">Menu</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ food.name }}</li>
+        </ol>
+    </nav>
+
+    <!-- Food Detail Card -->
+    <div class="card border-0 shadow-sm overflow-hidden mb-5 bg-white">
+        <div class="row g-0">
+            <div class="col-md-6">
+                {% if food.image %}
+                    <img src="{{ food.image.url }}" class="w-100 h-100" style="object-fit: cover; min-height: 350px;" alt="{{ food.name }}">
+                {% else %}
+                    <div class="d-flex align-items-center justify-content-center bg-secondary-subtle w-100 h-100" style="min-height: 350px;">
+                        <i class="fa-solid fa-utensils fa-5x text-secondary"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-6 p-5 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge {% if food.food_type == 'VEG' %}bg-success{% else %}bg-danger{% endif %} py-2 px-3">
+                            <i class="fa-solid {% if food.food_type == 'VEG' %}fa-leaf{% else %}fa-circle{% endif %} me-1"></i>{{ food.get_food_type_display }}
+                        </span>
+                        <span class="badge bg-dark py-2 px-3">
+                            <i class="fa-solid fa-pepper-hot me-1 text-danger"></i>{{ food.get_spice_level_display }} Spice
+                        </span>
+                        {% if food.is_special %}
+                            <span class="badge bg-warning text-dark py-2 px-3"><i class="fa-solid fa-star me-1"></i>Chef Special</span>
+                        {% endif %}
+                    </div>
+
+                    <h1 class="display-5 text-dark fw-bold mb-2">{{ food.name }}</h1>
+                    <p class="text-danger fw-bold fs-3 mb-4">
+                        {% if food.discount_percentage > 0 %}
+                            <span class="text-muted text-decoration-line-through fs-5 me-2">Rs. {{ food.price }}</span>Rs. {{ food.final_price|floatformat:2 }}
+                            <span class="badge bg-success fs-6 fw-normal ms-2">{{ food.discount_percentage|floatformat:0 }}% Off</span>
+                        {% else %}
+                            Rs. {{ food.price }}
+                        {% endif %}
+                    </p>
+                    
+                    <h5 class="text-dark">Description</h5>
+                    <p class="text-muted mb-4">{{ food.description }}</p>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-sm-4">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <i class="fa-solid fa-clock text-danger fs-4 mb-2"></i>
+                                <div class="small text-muted">Prep Time</div>
+                                <div class="fw-bold text-dark">{{ food.preparation_time }} mins</div>
+                            </div>
+                        </div>
+                        {% if food.calories %}
+                            <div class="col-6 col-sm-4">
+                                <div class="p-3 border rounded text-center bg-light">
+                                    <i class="fa-solid fa-fire text-orange-warn fs-4 mb-2"></i>
+                                    <div class="small text-muted">Calories</div>
+                                    <div class="fw-bold text-dark">{{ food.calories }} kcal</div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="col-6 col-sm-4">
+                            <div class="p-3 border rounded text-center bg-light">
+                                <i class="fa-solid fa-star text-warning fs-4 mb-2"></i>
+                                <div class="small text-muted">Rating</div>
+                                <div class="fw-bold text-dark">{{ avg_rating }} / 5.0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    {% if food.is_available %}
+                        <a href="{% url 'add_to_cart' food.id %}" class="btn btn-danger btn-lg rounded-pill shadow-sm"><i class="fa-solid fa-cart-plus me-2"></i>Add to Shopping Cart</a>
+                    {% else %}
+                        <button class="btn btn-secondary btn-lg rounded-pill" disabled><i class="fa-solid fa-circle-xmark me-2"></i>Currently Unavailable</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="row">
+        <!-- Reviews list -->
+        <div class="col-lg-7 mb-4">
+            <h3 class="mb-4 text-dark"><i class="fa-solid fa-comments text-danger me-2"></i>Customer Reviews ({{ reviews|length }})</h3>
+            <div class="d-flex flex-column gap-3">
+                {% for r in reviews %}
+                    <div class="card border-0 shadow-sm p-4 bg-white">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <h6 class="mb-0 fw-bold text-dark"><i class="fa-solid fa-user me-2 text-secondary"></i>{{ r.user.username }}</h6>
+                                <span class="small text-muted font-monospace">{{ r.created_at|date:"d M Y" }}</span>
+                            </div>
+                            <div class="text-warning">
+                                {% for i in "12345" %}
+                                    <i class="fa-{% if forloop.counter <= r.rating %}solid{% else %}regular{% endif %} fa-star"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <p class="text-muted mb-0 mt-2">{{ r.comment|default:"No comment provided." }}</p>
+                    </div>
+                {% empty %}
+                    <p class="text-muted font-italic">Be the first to review this dish! (Requires purchase confirmation).</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Review entry form -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm p-4 bg-white">
+                <h4 class="mb-3 text-dark"><i class="fa-solid fa-pen-to-square text-danger me-2"></i>Write a Review</h4>
+                {% if can_review %}
+                    <form action="{% url 'food_detail' food.slug %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">Select Rating</label>
+                            <select name="rating" class="form-select border-secondary-subtle" required>
+                                <option value="" disabled selected>Choose Star Rating...</option>
+                                <option value="5">5 Stars - Excellent Spice & Taste</option>
+                                <option value="4">4 Stars - Very Tasty</option>
+                                <option value="3">3 Stars - Average</option>
+                                <option value="2">2 Stars - Needs Improvement</option>
+                                <option value="1">1 Star - Poor Experience</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-muted">Write Comment</label>
+                            <textarea name="comment" rows="4" class="form-control border-secondary-subtle" placeholder="Tell us what you liked or disliked about this food..."></textarea>
+                        </div>
+                        <button class="btn btn-danger w-100 rounded-pill" type="submit">Submit Approved Review</button>
+                    </form>
+                {% else %}
+                    <div class="p-3 bg-light text-center border rounded">
+                        <i class="fa-solid fa-lock text-secondary fs-4 mb-2"></i>
+                        <p class="text-muted small mb-0">Reviews are restricted to registered users who have placed and received a delivery containing this item.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

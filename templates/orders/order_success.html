@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Order Confirmed - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0 shadow-sm p-5 bg-white rounded-3">
+                <div class="mb-4">
+                    <div class="mx-auto rounded-circle d-flex align-items-center justify-content-center bg-success-subtle text-success" style="width: 80px; height: 80px;">
+                        <i class="fa-solid fa-circle-check fa-3x"></i>
+                    </div>
+                </div>
+                
+                <h1 class="text-dark fw-bold mb-2">Order Confirmed!</h1>
+                <p class="text-muted mb-4">Thank you for ordering from Mahato Chinese Center. We are preparing your delicious food now!</p>
+                
+                <div class="p-3 bg-light rounded text-start mb-4 border border-secondary-subtle">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Order Number:</span>
+                        <span class="fw-bold text-dark">{{ order.order_number }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Payment Method:</span>
+                        <span class="fw-semibold text-dark">{{ order.payment.get_payment_method_display }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted small">Payment Status:</span>
+                        <span class="badge {% if order.payment.payment_status == 'SUCCESS' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                            {{ order.payment.get_payment_status_display }}
+                        </span>
+                    </div>
+                    <hr class="my-2 border-secondary-subtle">
+                    <div class="d-flex justify-content-between">
+                        <span class="fw-semibold text-dark">Total Amount:</span>
+                        <span class="fw-bold text-danger">Rs. {{ order.total_amount }}</span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a href="{% url 'order_detail' order.order_number %}" class="btn btn-danger rounded-pill py-2"><i class="fa-solid fa-truck-ramp-box me-2"></i>Track Live Order Status</a>
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill py-2">Return to Homepage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

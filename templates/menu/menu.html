@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Our Menu - Mahato Chinese Center{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card border-0 shadow-sm p-4 bg-white sticky-lg-top" style="top: 100px; z-index: 10;">
+                <h4 class="mb-4 text-dark"><i class="fa-solid fa-sliders text-danger me-2"></i>Filters</h4>
+                
+                <!-- Search bar in sidebar -->
+                <form action="{% url 'menu' %}" method="GET" class="mb-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Search Item</label>
+                    <div class="input-group">
+                        <input type="text" name="q" value="{{ query }}" class="form-control border-secondary-subtle" placeholder="Search...">
+                        <button class="btn btn-danger" type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                    {% if selected_category %}<input type="hidden" name="category" value="{{ selected_category }}">{% endif %}
+                    {% if selected_type %}<input type="hidden" name="type" value="{{ selected_type }}">{% endif %}
+                    {% if selected_spice %}<input type="hidden" name="spice" value="{{ selected_spice }}">{% endif %}
+                </form>
+
+                <!-- Category Links -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Categories</label>
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'menu' %}?q={{ query }}&type={{ selected_type }}&spice={{ selected_spice }}" class="list-group-item list-group-item-action border-0 px-0 d-flex justify-content-between align-items-center {% if not selected_category %}fw-bold text-danger{% endif %}">
+                            All Categories
+                        </a>
+                        {% for cat in categories %}
+                            <a href="{% url 'menu' %}?category={{ cat.slug }}&q={{ query }}&type={{ selected_type }}&spice={{ selected_spice }}" class="list-group-item list-group-item-action border-0 px-0 d-flex justify-content-between align-items-center {% if selected_category == cat.slug %}fw-bold text-danger{% endif %}">
+                                {{ cat.name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Food Type (Veg/Non-Veg) -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Food Type</label>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'menu' %}?category={{ selected_category }}&q={{ query }}&spice={{ selected_spice }}" class="btn btn-sm {% if not selected_type %}btn-dark{% else %}btn-outline-dark{% endif %} rounded-pill text-start">All Types</a>
+                        <a href="{% url 'menu' %}?type=VEG&category={{ selected_category }}&q={{ query }}&spice={{ selected_spice }}" class="btn btn-sm {% if selected_type == 'VEG' %}btn-success{% else %}btn-outline-success{% endif %} rounded-pill text-start"><i class="fa-solid fa-leaf me-2"></i>Vegetarian</a>
+                        <a href="{% url 'menu' %}?type=NON_VEG&category={{ selected_category }}&q={{ query }}&spice={{ selected_spice }}" class="btn btn-sm {% if selected_type == 'NON_VEG' %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-pill text-start"><i class="fa-solid fa-circle me-2"></i>Non-Vegetarian</a>
+                    </div>
+                </div>
+
+                <!-- Spice Level -->
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-uppercase text-muted">Spice Preference</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'menu' %}?category={{ selected_category }}&q={{ query }}&type={{ selected_type }}" class="badge {% if not selected_spice %}bg-dark{% else %}bg-secondary{% endif %} p-2 text-decoration-none">All</a>
+                        <a href="{% url 'menu' %}?spice=MILD&category={{ selected_category }}&q={{ query }}&type={{ selected_type }}" class="badge {% if selected_spice == 'MILD' %}bg-danger{% else %}bg-secondary{% endif %} p-2 text-decoration-none">Mild</a>
+                        <a href="{% url 'menu' %}?spice=MEDIUM&category={{ selected_category }}&q={{ query }}&type={{ selected_type }}" class="badge {% if selected_spice == 'MEDIUM' %}bg-danger{% else %}bg-secondary{% endif %} p-2 text-decoration-none">Medium</a>
+                        <a href="{% url 'menu' %}?spice=HOT&category={{ selected_category }}&q={{ query }}&type={{ selected_type }}" class="badge {% if selected_spice == 'HOT' %}bg-danger{% else %}bg-secondary{% endif %} p-2 text-decoration-none">Hot</a>
+                        <a href="{% url 'menu' %}?spice=EXTRA_HOT&category={{ selected_category }}&q={{ query }}&type={{ selected_type }}" class="badge {% if selected_spice == 'EXTRA_HOT' %}bg-danger{% else %}bg-secondary{% endif %} p-2 text-decoration-none">Extra Hot</a>
+                    </div>
+                </div>
+
+                <a href="{% url 'menu' %}" class="btn btn-outline-secondary btn-sm w-100 rounded-pill mt-2">Clear All Filters</a>
+            </div>
+        </div>
+
+        <!-- Menu Listings Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="text-dark">Delicious Dishes Available</h2>
+                <span class="text-muted">{{ foods|length }} items found</span>
+            </div>
+
+            <div class="row g-4">
+                {% for food in foods %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card food-card position-relative">
+                            <span class="food-badge {% if food.food_type == 'VEG' %}badge-veg{% else %}badge-nonveg{% endif %}">
+                                <i class="fa-solid {% if food.food_type == 'VEG' %}fa-leaf{% else %}fa-circle{% endif %} me-1"></i>{{ food.get_food_type_display }}
+                            </span>
+                            
+                            {% if food.image %}
+                                <img src="{{ food.image.url }}" class="card-img-top" alt="{{ food.name }}">
+                            {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-secondary-subtle" style="height: 180px;">
+                                    <i class="fa-solid fa-utensils fa-3x text-secondary"></i>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="card-body p-4 d-flex flex-column">
+                                <h5 class="card-title"><a href="{% url 'food_detail' food.slug %}" class="text-decoration-none text-dark">{{ food.name }}</a></h5>
+                                <p class="card-text text-muted small flex-grow-1">{{ food.description|truncatewords:15 }}</p>
+                                
+                                <div class="mb-3">
+                                    <span class="small text-muted me-2">Spice:</span>
+                                    <span class="small text-danger font-monospace fw-bold">{{ food.get_spice_level_display }}</span>
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div class="text-danger fw-bold fs-5">
+                                        {% if food.discount_percentage > 0 %}
+                                            <span class="text-muted text-decoration-line-through small me-2">Rs. {{ food.price }}</span>Rs. {{ food.final_price|floatformat:2 }}
+                                        {% else %}
+                                            Rs. {{ food.price }}
+                                        {% endif %}
+                                    </div>
+                                    <a href="{% url 'add_to_cart' food.id %}" class="btn btn-danger btn-sm rounded-pill px-3"><i class="fa-solid fa-cart-plus me-1"></i>Add</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <i class="fa-solid fa-face-frown fa-3x text-secondary-subtle mb-3"></i>
+                        <p class="text-muted fs-5">No dishes match your active search filters.</p>
+                        <a href="{% url 'menu' %}" class="btn btn-danger btn-sm rounded-pill mt-2">Reset Menu Filters</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

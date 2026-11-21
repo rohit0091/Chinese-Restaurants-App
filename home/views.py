@@ -1,27 +1,19 @@
 from django.shortcuts import render
+from menu.models import Category, Food, Offer
 
-# Create your views here.
-from django.http import HttpResponse
-from django.shortcuts import render
-
-
-def home(request):
-    # return HttpResponse("Welcome to Chinese Center")
-    # return render(request, "home/home.html")
-    restaurant_name = "Mahato Chinese Center"   #This is called the context.
-
-    return render(
-        request,
-        "home/home.html",
-        {
-            "restaurant_name": restaurant_name       #Django template variable, Django replaces it with the value from the context.
-        }
-    )
-
-
-def about(request):
-    # return HttpResponse("This is the famous restrunt in lohegoan. we have 12+ experienced cooks to serve you any dishes from the menu.")
-    return render(request, "home/about.html")
-
-def contact(request):
-    return render(request, "home/contact.html")
+def home_view(request):
+    """
+    Homepage view rendering special items, categories, and offers.
+    """
+    categories = Category.objects.filter(is_active=True)[:6]
+    featured_foods = Food.objects.filter(is_available=True, is_featured=True)[:6]
+    special_foods = Food.objects.filter(is_available=True, is_special=True)[:6]
+    active_offers = Offer.objects.filter(is_active=True)[:3]
+    
+    context = {
+        'categories': categories,
+        'featured_foods': featured_foods,
+        'special_foods': special_foods,
+        'active_offers': active_offers,
+    }
+    return render(request, 'home/index.html', context)

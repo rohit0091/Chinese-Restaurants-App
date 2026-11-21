@@ -1,58 +1,314 @@
-{% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mahato Chinese Center - Chinese Fast Food{% endblock %}</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome 6 Icons CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <!-- Google Fonts: Inter & Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-red: #c82333;
+            --dark-red: #8b0000;
+            --orange-warn: #fd7e14;
+            --bg-charcoal: #1e1e1e;
+            --light-bg: #f8f9fa;
+            --font-sans: 'Inter', sans-serif;
+            --font-heading: 'Outfit', sans-serif;
+        }
 
-    <title>{% block title %}Mahato Chinese Center{% endblock %}</title>
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--light-bg);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 700;
+        }
+
+        /* Navbar Custom Styles */
+        .navbar-brand {
+            font-family: var(--font-heading);
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #ffffff !important;
+            letter-spacing: -0.5px;
+        }
+        
+        .navbar-brand span {
+            color: #ffc107;
+        }
+
+        .bg-chinese {
+            background-color: var(--dark-red);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.85) !important;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #ffc107 !important;
+        }
+
+        .btn-cart {
+            position: relative;
+            background-color: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            color: white;
+            border-radius: 30px;
+            padding: 6px 16px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cart:hover {
+            background-color: #ffc107;
+            color: var(--dark-red);
+            border-color: #ffc107;
+        }
+
+        .cart-badge {
+            background-color: #ffffff;
+            color: var(--dark-red);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 50%;
+            margin-left: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        .btn-cart:hover .cart-badge {
+            background-color: var(--dark-red);
+            color: white;
+        }
+
+        /* Hero banner and custom cards */
+        .hero-banner {
+            background: linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)), url('https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            border-bottom: 5px solid #ffc107;
+        }
+
+        .food-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            overflow: hidden;
+            background-color: white;
+            height: 100%;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .food-card img {
+            height: 180px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .food-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            z-index: 10;
+        }
+
+        .badge-veg {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-nonveg {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: var(--bg-charcoal);
+            color: rgba(255,255,255,0.7);
+            padding: 40px 0 20px 0;
+            margin-top: auto;
+            border-top: 5px solid var(--primary-red);
+        }
+
+        footer h5 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: #ffc107;
+        }
+
+        /* Spice Level indicators */
+        .spice-chili {
+            color: #ffc107;
+            margin-right: 2px;
+        }
+        
+        .spice-chili.active {
+            color: var(--primary-red);
+        }
+        
+        /* Message toasts */
+        .messages-container {
+            position: fixed;
+            top: 85px;
+            right: 20px;
+            z-index: 1050;
+            max-width: 350px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
 </head>
-
 <body>
 
-    <header class="site-header">
-
-        <div class="container navbar">
-
-            <a href="{% url 'home' %}" class="logo">
-                🥢 Mahato Chinese Center
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-expand-lg bg-chinese navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fa-solid fa-fire-burner me-2 text-warning"></i>Mahato<span>Chinese</span>
             </a>
-
-            <nav>
-                <a href="{% url 'home' %}">Home</a>
-                <a href="{% url 'about' %}">About</a>
-                <a href="{% url 'contact' %}">Contact</a>
-                <a href="{% url 'menu_home' %}">Menu</a>
-                <a href="{% url 'cart_home' %}">Cart</a>
-                <a href="{% url 'orders_home' %}">Orders</a>
-            </nav>
-
+            <button class="navbar-brand d-lg-none btn-cart border-0 bg-transparent" onclick="location.href='{% url 'cart' %}'">
+                <i class="fa-solid fa-shopping-cart"></i>
+                <span class="cart-badge">{{ cart_count }}</span>
+            </button>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}"><i class="fa-solid fa-house me-1"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'menu' %}"><i class="fa-solid fa-utensils me-1"></i> Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'menu' %}?type=VEG"><i class="fa-solid fa-leaf me-1 text-success"></i> Pure Veg</a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle text-white d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-solid fa-circle-user fa-lg"></i> {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa-solid fa-user me-2"></i> Profile Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'order_history' %}"><i class="fa-solid fa-receipt me-2"></i> My Orders</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                            </ul>
+                        </div>
+                        <a href="{% url 'cart' %}" class="btn btn-cart d-none d-lg-inline-block">
+                            <i class="fa-solid fa-shopping-cart"></i> Cart
+                            <span class="cart-badge">{{ cart_count }}</span>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-outline-light rounded-pill px-4"><i class="fa-solid fa-right-to-bracket me-1"></i> Login</a>
+                        <a href="{% url 'signup' %}" class="btn btn-warning rounded-pill px-4"><i class="fa-solid fa-user-plus me-1"></i> Sign Up</a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
+    </nav>
 
-    </header>
+    <!-- Message Alerts banner -->
+    <div class="messages-container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags == 'info' %}info{% else %}success{% endif %} alert-dismissible fade show shadow-sm" role="alert">
+                    {% if message.tags == 'error' %}
+                        <i class="fa-solid fa-circle-exclamation me-2"></i>
+                    {% else %}
+                        <i class="fa-solid fa-circle-check me-2"></i>
+                    {% endif %}
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
 
-
-    <main>
-        {% block content %}
-        {% endblock %}
+    <!-- Main Content Area -->
+    <main class="flex-grow-1">
+        {% block content %}{% endblock %}
     </main>
 
-
-    <footer class="site-footer">
-
+    <!-- Footer Area -->
+    <footer>
         <div class="container">
-            <p>
-                © 2026 Mahato Chinese Center.
-                All rights reserved.
-            </p>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <h5><i class="fa-solid fa-fire-burner text-warning me-2"></i>Mahato Chinese Center</h5>
+                    <p>Experience the finest Chinese Fast Food in town, prepared fresh with premium ingredients. Serving delicious noodles, manchurian, momos, and more!</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="#" class="fs-4"><i class="fa-brands fa-facebook"></i></a>
+                        <a href="#" class="fs-4"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="fs-4"><i class="fa-brands fa-whatsapp"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 ps-md-5">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="{% url 'home' %}">Home</a></li>
+                        <li><a href="{% url 'menu' %}">Browse Menu</a></li>
+                        <li><a href="{% url 'cart' %}">My Shopping Cart</a></li>
+                        <li><a href="{% url 'profile' %}">Account Settings</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Store Location & Hours</h5>
+                    <p class="mb-2"><i class="fa-solid fa-location-dot me-2 text-warning"></i> Mahato Chinese Center, Main Market, City Plaza</p>
+                    <p class="mb-2"><i class="fa-solid fa-phone me-2 text-warning"></i> +91 98765 43210</p>
+                    <p class="mb-2"><i class="fa-solid fa-clock me-2 text-warning"></i> Open Daily: 11:00 AM - 11:00 PM</p>
+                </div>
+            </div>
+            <hr class="mt-4 border-secondary">
+            <div class="text-center text-secondary small">
+                <p>&copy; 2026 Mahato Chinese Center. All Rights Reserved. Designed for fast, delicious cravings.</p>
+            </div>
         </div>
-
     </footer>
 
+    <!-- Bootstrap 5 Bundle JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
 </body>
-
 </html>
